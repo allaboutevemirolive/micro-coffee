@@ -1,0 +1,42 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: API-GATEWAY
+  cloud:
+    gateway:
+      routes:
+        - id: COFFEE-SERVICE
+          uri: lb://COFFEE-SERVICE
+          predicates:
+            # - Host=localhost
+            - Path=/API/coffee/**
+        # - id: SCHOOL-SERVICE
+        #   uri: lb://SCHOOL-SERVICE
+        #   predicates:
+        #     - Path=/school/**
+      # Add CORS Configuration rules to gateway: 
+      # https://stackoverflow.com/a/72896860/16768401 (Current reference)
+      # https://stackoverflow.com/a/70985763/16768401 (Original answer)
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:3000"
+            allowedHeaders: "*"
+            allowedMethods: "*"
+      discovery:
+        locator:
+          enabled: true 
+
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
